@@ -1,0 +1,50 @@
+# Data paths
+data_path: 'data/raw/data.csv'
+labels_path: 'data/raw/labels.csv'
+processed_data_path: 'data/processed/'  # Path to save processed data
+
+# CSV header settings
+data_has_header: False               # True if data CSV has headers, False otherwise
+labels_has_header: False             # True if labels CSV has headers, False otherwise
+
+# Custom column names
+data_columns: []                     # List of column names for data CSV (optional)
+labels_columns: ['task', 'subject', 'trial']  # Column names for labels CSV
+
+# Preprocessing settings
+missing_value_strategy: 'mean'
+categorical_columns: []              # No categorical columns to encode in features
+scaling_method: 'standard'
+
+# Target variable settings
+target_variable: 'task'              # Options: 'task', 'subject', 'trial'
+
+# Cross-validation settings
+cross_validation:
+  task_identification:
+    method: 'leave_one_subject_out'
+  user_identification:
+    method: 'k_fold'
+    n_splits: 5
+    n_repeats: 10
+
+# Feature Engineering Settings
+feature_engineering:
+  feature_selection_method: 'none'   # Options: 'univariate', 'mutual_info', 'model', 'none'
+  k_best: 10                               # Number of features to select
+  dimensionality_reduction_method: 'pca'   # Options: 'pca', 'none'
+  n_components: 5                          # Number of components to keep
+
+# Model settings
+models:
+  - name: 'RandomForest'
+    parameters:
+      n_estimators: [100, 200]
+      max_depth: [None, 10, 20]
+  - name: 'SVM'
+    parameters:
+      C: [0.1, 1, 10]
+      kernel: ['linear', 'rbf']
+
+# Other settings
+random_seed: 42
