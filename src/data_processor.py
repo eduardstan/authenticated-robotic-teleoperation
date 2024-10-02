@@ -41,26 +41,26 @@ def get_cv_strategy(X, y, groups, config, logger=None):
                 logger.error("Groups cannot be None for Leave-One-Group-Out cross-validation.")
                 raise ValueError("Groups cannot be None for Leave-One-Group-Out cross-validation.")
             logger.info("Using Leave-One-Subject-Out cross-validation for Task Identification.")
-            logo = LeaveOneGroupOut()
-            cv = logo.split(X, y, groups=groups)
+            cv = LeaveOneGroupOut()
+            # cv = logo.split(X, y, groups=groups)
         else:
             logger.error(f"Unknown cross-validation method for task identification: {method}")
             raise ValueError(f"Unknown method: {method}")
 
     elif target_variable == 'subject':
-        task_cv_config = cv_config.get('user_identification', {})
-        method = task_cv_config.get('method', 'k_fold')
-        n_splits = task_cv_config.get('n_splits', 5)
-        n_repeats = task_cv_config.get('n_repeats', 1)
+        user_cv_config = cv_config.get('user_identification', {})
+        method = user_cv_config.get('method', 'k_fold')
+        n_splits = user_cv_config.get('n_splits', 3)
+        n_repeats = user_cv_config.get('n_repeats', 1)
 
         if method == 'k_fold':
             logger.info(f"Using Stratified K-Fold cross-validation for User Identification with {n_splits} splits.")
             cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_seed)
-            cv = cv.split(X, y)
+            # cv = cv.split(X, y)
         elif method == 'repeated_k_fold':
             logger.info(f"Using Repeated Stratified K-Fold cross-validation for User Identification with {n_splits} splits and {n_repeats} repeats.")
             cv = RepeatedStratifiedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=random_seed)
-            cv = cv.split(X, y)
+            # cv = cv.split(X, y)
         else:
             logger.error(f"Unknown cross-validation method for user identification: {method}")
             raise ValueError(f"Unknown method: {method}")
@@ -90,33 +90,53 @@ def process_data(config, logger=None):
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     processed_data_dir = os.path.join(project_root, 'data', 'processed')
     X_path = os.path.join(processed_data_dir, 'features.csv')
-    y_path = os.path.join(processed_data_dir, 'target.csv')
+    labels_processed_path = os.path.join(processed_data_dir, 'labels.csv')
+    labels_raw_path = os.path.join(project_root, config['labels_path'])  # data/raw/labels.csv
 
     logger.info(f"Loading features from {X_path}")
-    logger.info(f"Loading target variable from {y_path}")
 
     X = pd.read_csv(X_path)
-    y = pd.read_csv(y_path).squeeze()  # Convert to Series if necessary
 
-    if config['target_variable'] == 'task':
+    # Load labels
+    if os.path.exists(labels_processed_path):
+        logger.info(f"Loading labels from {labels_processed_path}")
+        labels = pd.read_csv(labels_processed_path)
+    elif os.path.exists(labels_raw_path):
+        logger.info(f"Loading labels from {labels_raw_path}")
+        labels = pd.read_csv(labels_raw_path, header=None)
+        labels.columns = config['labels_columns']
+    else:
+        logger.error(f"Labels file not found in {labels_processed_path} or {labels_raw_path}")
+        raise FileNotFoundError("Labels file not found.")
+
+    # Ensure labels and features are aligned
+    labels = labels.reset_index(drop=True)
+    X = X.reset_index(drop=True)
+    if len(labels) != len(X):
+        logger.error("The number of labels does not match the number of samples in X.")
+        raise ValueError("Mismatch between number of samples in X and labels.")
+
+    # Set target variable
+    target_variable = config['target_variable']
+    if target_variable not in labels.columns:
+        logger.error(f"Target variable '{target_variable}' not found in labels.")
+        raise ValueError(f"Target variable '{target_variable}' not found in labels.")
+    y = labels[target_variable]
+
+    # Set groups if necessary
+    if target_variable == 'task':
         # For Task Identification, group by 'subject'
-        labels_path = os.path.join(processed_data_dir, 'labels.csv')
-        if os.path.exists(labels_path):
-            labels = pd.read_csv(labels_path)
-        else:
-            # Load labels from raw data
-            labels_path = os.path.join(project_root, config['labels_path'])
-            labels = pd.read_csv(labels_path, header=None)
-            labels.columns = config['labels_columns']
         groups = labels['subject']
     else:
-        # For User Identification, we may not need a grouping variable
         groups = None
+
+    # Log the distribution of the target variable
+    logger.info(f"Target variable '{target_variable}' distribution:\n{y.value_counts()}")
 
     # Get cross-validation strategy
     cv = get_cv_strategy(X, y, groups, config, logger)
 
-    return X, y, cv
+    return X, y, cv, groups
 
 if __name__ == "__main__":
     # Initialize logger
@@ -128,10 +148,15 @@ if __name__ == "__main__":
     config = load_config(config_path)
 
     # Process data and get cross-validation strategy
-    X, y, cv = process_data(config, logger)
+    X, y, cv, groups = process_data(config, logger)
+
+    if groups is not None:
+        splitter = cv.split(X, y, groups=groups)
+    else:
+        splitter = cv.split(X, y)
 
     # Example usage: iterate over cross-validation splits
-    for fold_idx, (train_idx, test_idx) in enumerate(cv):
+    for fold_idx, (train_idx, test_idx) in enumerate(splitter):
         logger.info(f"Fold {fold_idx + 1}")
         X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
         y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
