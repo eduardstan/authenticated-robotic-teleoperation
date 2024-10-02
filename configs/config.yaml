@@ -17,16 +17,16 @@ categorical_columns: []              # No categorical columns to encode in featu
 scaling_method: 'standard'
 
 # Target variable settings
-target_variable: 'task'              # Options: 'task', 'subject', 'trial'
+target_variable: 'subject'              # Options: 'task', 'subject', 'trial'
 
 # Cross-validation settings
 cross_validation:
   task_identification:
     method: 'leave_one_subject_out'
   user_identification:
-    method: 'k_fold'
-    n_splits: 5
-    n_repeats: 10
+    method: 'repeated_k_fold'
+    n_splits: 16
+    n_repeats: 5
 
 # Feature Engineering Settings
 feature_engineering:
