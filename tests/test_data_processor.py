@@ -27,7 +27,7 @@ class TestDataProcessor(unittest.TestCase):
         # Create sample data
         cls.X = pd.DataFrame({'f"feature_{n}"': np.random.rand(144) for n in range(0,144)})
         # For brevity, we will simulate only a few features
-        # You can expand this to match your actual feature size
+        # We can expand this to match your actual feature size
 
         # Create labels
         tasks = np.tile(np.repeat([1, 2, 3], 16 * 3), 1)
@@ -86,7 +86,7 @@ class TestDataProcessor(unittest.TestCase):
         # Set target variable to 'subject'
         self.config['target_variable'] = 'subject'
         self.config['cross_validation']['user_identification']['method'] = 'repeated_k_fold'
-        self.config['cross_validation']['user_identification']['n_splits'] = 5  # Changed from 16 to 5
+        self.config['cross_validation']['user_identification']['n_splits'] = 5 
         self.config['cross_validation']['user_identification']['n_repeats'] = 5
 
         X, y, cv = process_data(self.config, self.logger)
