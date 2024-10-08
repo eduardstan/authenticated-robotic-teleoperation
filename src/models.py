@@ -1,5 +1,3 @@
-# src/models.py
-
 import pandas as pd
 import numpy as np
 import os
@@ -82,11 +80,11 @@ def build_model_pipeline(config, logger=None):
             for param, values in parameters.items():
                 model_params[param_prefix + param] = values
         elif model_name.lower() == 'svm':
-            model = SVC(probability=True, random_state=config.get('random_seed', 42))
+            model = SVC(class_weight='balanced', probability=True, random_state=config.get('random_seed', 42))
             for param, values in parameters.items():
                 model_params[param_prefix + param] = values
         elif model_name.lower() == 'logisticregression':
-            model = LogisticRegression(class_weight='balanced', max_iter=1000, random_state=config.get('random_seed', 42))
+            model = LogisticRegression(max_iter=1000, random_state=config.get('random_seed', 42))
             for param, values in parameters.items():
                 model_params[param_prefix + param] = values
         elif model_name.lower() == 'knn':
@@ -195,8 +193,9 @@ def train_and_evaluate(config, logger=None):
     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 
     if task_type == 'user_auth':
-        # For user authentication, we need to handle per-user hyperparameter tuning
-        subjects = labels['subject'].unique()
+        # For user authentication, we use the best-performing model from user identification
+        # Assuming only one model is specified in the config for user authentication
+        # Modify the code to use only the specified model and parameters without GridSearchCV
         for idx, (pipeline, param_grid) in enumerate(pipelines_with_params):
             model_name = pipeline.named_steps['classifier'].__class__.__name__
             logger.info(f"Starting training for model: {model_name}")
@@ -208,7 +207,12 @@ def train_and_evaluate(config, logger=None):
             fold_f1s = []
             fold_eers = []
 
-            best_params_list = []
+            # Since we are not tuning hyperparameters, we use the provided parameters directly
+            # Set the model parameters
+            classifier = pipeline.named_steps['classifier']
+            classifier.set_params(**{k.split('__')[1]: v[0] for k, v in param_grid.items()})
+
+            subjects = labels['subject'].unique()
 
             for subject_idx, target_subject in enumerate(subjects):
                 logger.info(f"Processing user {target_subject} ({subject_idx + 1}/{len(subjects)})")
@@ -217,48 +221,22 @@ def train_and_evaluate(config, logger=None):
                 y_binary = (labels['subject'] == target_subject).astype(int)
 
                 # Split data into train/test
-                # Use the custom function to get train/test indices for this user
                 train_indices, test_indices = get_user_auth_split(labels, target_subject, config, logger)
 
                 X_train, X_test = X.iloc[train_indices], X.iloc[test_indices]
                 y_train, y_test = y_binary.iloc[train_indices], y_binary.iloc[test_indices]
 
-                # Define inner cross-validation for hyperparameter tuning
-                inner_cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=config.get('random_seed', 42))
-
-                # Define scoring metrics
-                scoring = {
-                    'accuracy': make_scorer(accuracy_score),
-                    'precision_macro': make_scorer(precision_score, average='macro', zero_division=0),
-                    'recall_macro': make_scorer(recall_score, average='macro', zero_division=0),
-                    'f1_macro': make_scorer(f1_score, average='macro', zero_division=0),
-                    'eer': make_scorer(compute_eer, greater_is_better=False, response_method='predict')
-                }
-
-                # Initialize GridSearchCV
-                grid_search = GridSearchCV(
-                    estimator=pipeline,
-                    param_grid=param_grid,
-                    scoring=scoring,
-                    refit='eer',  # Metric to optimize
-                    cv=inner_cv,
-                    n_jobs=-1,
-                    verbose=1,
-                    return_train_score=True,
-                )
-
                 # Fit the model
-                grid_search.fit(X_train, y_train)
+                pipeline.fit(X_train, y_train)
 
-                # Use the best estimator to predict on test set
-                best_model = grid_search.best_estimator_
-                y_pred = best_model.predict(X_test)
+                # Predict on test set
+                y_pred = pipeline.predict(X_test)
 
                 # Evaluate performance
                 accuracy = accuracy_score(y_test, y_pred)
-                precision = precision_score(y_test, y_pred, zero_division=0)
-                recall = recall_score(y_test, y_pred, zero_division=0)
-                f1 = f1_score(y_test, y_pred, zero_division=0)
+                precision = precision_score(y_test, y_pred, average='macro', zero_division=0)
+                recall = recall_score(y_test, y_pred, average='macro', zero_division=0)
+                f1 = f1_score(y_test, y_pred, average='macro', zero_division=0)
                 eer = compute_eer(y_test, y_pred)
 
                 fold_accuracies.append(accuracy)
@@ -266,8 +244,6 @@ def train_and_evaluate(config, logger=None):
                 fold_recalls.append(recall)
                 fold_f1s.append(f1)
                 fold_eers.append(eer)
-
-                best_params_list.append(grid_search.best_params_)
 
                 logger.info(f"User {target_subject} Results - Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1: {f1:.4f}, EER: {eer:.4f}")
 
@@ -278,12 +254,11 @@ def train_and_evaluate(config, logger=None):
             avg_f1 = np.mean(fold_f1s)
             avg_eer = np.mean(fold_eers)
 
-            # Find the most common best parameters
-            best_params_df = pd.DataFrame(best_params_list)
-            common_best_params = best_params_df.mode().iloc[0].to_dict()
+            # Since we used predefined parameters, we can report them directly
+            common_best_params = {k.split('__')[1]: v[0] for k, v in param_grid.items()}
 
             logger.info(f"Average Results for {model_name} - Accuracy: {avg_accuracy:.4f}, Precision: {avg_precision:.4f}, Recall: {avg_recall:.4f}, F1: {avg_f1:.4f}, EER: {avg_eer:.4f}")
-            logger.info(f"Most common best parameters for {model_name}: {common_best_params}")
+            logger.info(f"Parameters used for {model_name}: {common_best_params}")
 
             all_results.append({
                 'model_name': model_name,
@@ -291,8 +266,10 @@ def train_and_evaluate(config, logger=None):
                 'average_precision': avg_precision,
                 'average_recall': avg_recall,
                 'average_f1': avg_f1,
-                'common_best_params': common_best_params,
+                'average_eer': avg_eer,
+                'parameters_used': common_best_params,
             })
+
     else:
         for idx, (pipeline, param_grid) in enumerate(pipelines_with_params):
             model_name = pipeline.named_steps['classifier'].__class__.__name__

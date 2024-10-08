@@ -42,8 +42,9 @@ feature_engineering:
 models:
   # - name: 'RandomForest'
   #   parameters:
-  #     n_estimators: [50, 100, 150, 200]
+  #     n_estimators: [25, 50, 75, 100, 125, 150, 175, 200]
   #     max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  #     criterion: ['gini', 'entropy', 'log_loss']
   # - name: 'SVM'
   #   parameters:
   #     C: [0.001, 0.1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]

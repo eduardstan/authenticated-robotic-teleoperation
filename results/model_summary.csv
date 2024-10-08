@@ -1,2 +1,2 @@
-model_name,average_accuracy,average_precision,average_recall,average_f1,common_best_params
-LogisticRegression,0.9609375,0.6864583333333333,0.8125,0.729265873015873,"{'classifier__C': 10, 'classifier__penalty': 'l2', 'classifier__solver': 'lbfgs'}"
+model_name,average_accuracy,average_precision,average_recall,average_f1,average_eer,parameters_used
+LogisticRegression,0.97265625,0.9059892799545266,0.8784722222222222,0.8807904892968401,0.12152777777777778,"{'C': 10, 'penalty': 'l2', 'solver': 'lbfgs'}"
