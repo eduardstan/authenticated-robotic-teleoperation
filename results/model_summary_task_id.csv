@@ -1,7 +1,0 @@
-model_name,best_params,best_score,results_csv,model_path
-RandomForestClassifier,"{'classifier__criterion': 'gini', 'classifier__max_depth': 4, 'classifier__n_estimators': 175}",0.7430104617604618,/home/eduard/.python/cem/results/grid_search_results_RandomForestClassifier.csv,/home/eduard/.python/cem/results/best_model_RandomForestClassifier.pkl
-SVC,"{'classifier__C': 0.1, 'classifier__kernel': 'linear'}",0.789864417989418,/home/eduard/.python/cem/results/grid_search_results_SVC.csv,/home/eduard/.python/cem/results/best_model_SVC.pkl
-LogisticRegression,"{'classifier__C': 0.1, 'classifier__penalty': 'l2', 'classifier__solver': 'lbfgs'}",0.8531249999999999,/home/eduard/.python/cem/results/grid_search_results_LogisticRegression.csv,/home/eduard/.python/cem/results/best_model_LogisticRegression.pkl
-KNeighborsClassifier,"{'classifier__n_neighbors': 13, 'classifier__weights': 'uniform'}",0.6679894179894179,/home/eduard/.python/cem/results/grid_search_results_KNeighborsClassifier.csv,/home/eduard/.python/cem/results/best_model_KNeighborsClassifier.pkl
-DecisionTreeClassifier,"{'classifier__criterion': 'gini', 'classifier__max_depth': 3}",0.6764715608465608,/home/eduard/.python/cem/results/grid_search_results_DecisionTreeClassifier.csv,/home/eduard/.python/cem/results/best_model_DecisionTreeClassifier.pkl
-GaussianNB,{'classifier__var_smoothing': 1e-11},0.5730489417989417,/home/eduard/.python/cem/results/grid_search_results_GaussianNB.csv,/home/eduard/.python/cem/results/best_model_GaussianNB.pkl
