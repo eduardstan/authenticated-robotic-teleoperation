@@ -78,8 +78,8 @@ This repository contains the code and data for our research on integrating biome
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/yourproject.git
-cd yourproject
+git clone https://github.com/eduardstan/auth-robotic-teleop.git
+cd auth-robotic-teleop
 ```
 
 ### Set Up Virtual Environment (Optional but Recommended)
@@ -371,8 +371,8 @@ Contributions are welcome! Please follow these steps:
 2. **Clone Your Fork**:
 
    ```bash
-   git clone https://github.com/yourusername/yourproject.git
-   cd yourproject
+   git clone https://github.com/eduardstan/auth-robotic-teleop.git
+   cd auth-robotic-teleop
    ```
 
 3. **Create a New Branch**:
@@ -408,8 +408,6 @@ For any questions or inquiries, please contact:
 
 - **Ionel Eduard Stan**
 - **Email**: ioneleduard.stan@unimib.it
-
-Project Link: [https://github.com/yourusername/yourproject](https://github.com/yourusername/yourproject)
 
 ---
 
