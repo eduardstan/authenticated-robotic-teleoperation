@@ -84,7 +84,7 @@ def build_model_pipeline(config, logger=None):
             for param, values in parameters.items():
                 model_params[param_prefix + param] = values
         elif model_name.lower() == 'logisticregression':
-            model = LogisticRegression(class_weight='balanced', random_state=config.get('random_seed', 42))
+            model = LogisticRegression(class_weight='balanced', max_iter=1000, random_state=config.get('random_seed', 42))
             for param, values in parameters.items():
                 model_params[param_prefix + param] = values
         elif model_name.lower() == 'knn':

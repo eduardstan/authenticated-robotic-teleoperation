@@ -241,7 +241,7 @@ if __name__ == "__main__":
     config = load_config(config_path)
 
     # Process data and get cross-validation strategy
-    X, y, cv, groups = process_data(config, logger)
+    X, y, cv, labels, groups = process_data(config, logger)
 
     if groups is not None:
         splitter = cv.split(X, y, groups=groups)

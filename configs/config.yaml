@@ -17,8 +17,8 @@ categorical_columns: []              # No categorical columns to encode in featu
 scaling_method: 'none'               # Options: 'standard', 'minmax', 'none'
 
 # Target variable settings
-target_variable: 'subject'              # Options: 'task', 'subject'
-task_type: 'user_auth'               # New parameter: 'user_id', 'task_id', 'user_auth'
+target_variable: 'task'              # Options: 'task', 'subject'
+task_type: 'task_id'               # Options: 'user_id', 'task_id', 'user_auth'
 
 # Cross-validation settings
 cross_validation:
@@ -40,19 +40,19 @@ feature_engineering:
 
 # Model settings
 models:
-  # - name: 'RandomForest'
-  #   parameters:
-  #     n_estimators: [25, 50, 75, 100, 125, 150, 175, 200]
-  #     max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  #     criterion: ['gini', 'entropy', 'log_loss']
-  # - name: 'SVM'
-  #   parameters:
-  #     C: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-  #     kernel: ['linear', 'rbf', 'sigmoid']
+  - name: 'RandomForest'
+    parameters:
+      n_estimators: [25, 50, 75, 100, 125, 150, 175, 200]
+      max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      criterion: ['gini', 'entropy', 'log_loss']
+  - name: 'SVM'
+    parameters:
+      C: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+      kernel: ['linear', 'rbf', 'sigmoid']
   - name: 'LogisticRegression'
     parameters:
-      # C: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-      C: [0.3]
+      C: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+      # C: [0.3]
   # - name: 'KNN'
   #   parameters:
   #     n_neighbors: [1, 3, 5, 7, 9, 11, 13, 15]
