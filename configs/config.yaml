@@ -52,33 +52,32 @@ models:
   - name: 'LogisticRegression'
     parameters:
       C: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-      # C: [0.3]
-  # - name: 'KNN'
-  #   parameters:
-  #     n_neighbors: [1, 3, 5, 7, 9, 11, 13, 15]
-  #     weights: ['uniform', 'distance']
-  # - name: 'DecisionTree'
-  #   parameters:
-  #     max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  #     criterion: ['gini', 'entropy', 'log_loss']
-  # - name: 'NaiveBayes'
-  #   parameters:
-  #     var_smoothing: [0.00000000001, 0.0000000001, 0.000000001, 0.00000001, 0.0000001]
-  # - name: 'GradientBoosting'
-  #   parameters:
-  #     n_estimators: [50, 100, 150, 200]
-  #     learning_rate: [0.1, 0.05, 0.01, 0.005, 0.0001]
-  #     max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  # - name: 'XGBoost'
-  #   parameters:
-  #     n_estimators: [50, 100, 150, 200]
-  #     learning_rate: [0.1, 0.05, 0.01, 0.005, 0.0001]
-  #     max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  # - name: 'lightgbm'
-  #   parameters:
-  #     n_estimators: [50, 100, 150, 200]
-  #     learning_rate: [0.1, 0.05, 0.01, 0.005, 0.0001]
-  #     max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  - name: 'KNN'
+    parameters:
+      n_neighbors: [1, 3, 5, 7, 9, 11, 13, 15]
+      weights: ['uniform', 'distance']
+  - name: 'DecisionTree'
+    parameters:
+      max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      criterion: ['gini', 'entropy', 'log_loss']
+  - name: 'NaiveBayes'
+    parameters:
+      var_smoothing: [0.00000000001, 0.0000000001, 0.000000001, 0.00000001, 0.0000001]
+  - name: 'GradientBoosting'
+    parameters:
+      n_estimators: [50, 100, 150, 200]
+      learning_rate: [0.1, 0.05, 0.01, 0.005, 0.0001]
+      max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  - name: 'XGBoost'
+    parameters:
+      n_estimators: [50, 100, 150, 200]
+      learning_rate: [0.1, 0.05, 0.01, 0.005, 0.0001]
+      max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  - name: 'lightgbm'
+    parameters:
+      n_estimators: [50, 100, 150, 200]
+      learning_rate: [0.1, 0.05, 0.01, 0.005, 0.0001]
+      max_depth: [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
 # Other settings
 random_seed: 42
