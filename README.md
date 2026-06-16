@@ -356,6 +356,7 @@ The processing pipeline consists of three main scripts:
 - **Data Privacy**:
   - The dataset does not contain personally identifiable information.
   - All user data is anonymized and labeled with subject IDs.
+  - Please refer to the [data sharing policy](DATA_SHARING_POLICY.md)
 
 - **Issues and Support**:
   - If you encounter any issues or have questions about the repository, please open an issue on GitHub or contact us directly.
